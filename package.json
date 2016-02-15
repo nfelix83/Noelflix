@@ -1,0 +1,28 @@
+{
+  "name": "pirate_booty",
+  "version": "0.0.1",
+  "description": "Yaaaaaaargh!",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nfelix83/2016-01-MVP-PirateBooty.git"
+  },
+  "author": "Noel Felix",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/nfelix83/2016-01-MVP-PirateBooty/issues"
+  },
+  "homepage": "https://github.com/nfelix83/2016-01-MVP-PirateBooty#readme",
+  "dependencies": {
+    "bluebird": "^3.3.1",
+    "bower": "^1.7.7",
+    "express": "^4.13.4",
+    "kickass-torrent": "0.0.3",
+    "morgan": "^1.6.1",
+    "nodemon": "^1.8.1",
+    "torrent-stream": "^1.0.2"
+  }
+}

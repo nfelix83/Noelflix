@@ -1,0 +1,25 @@
+{
+  "name": "pirate_booty",
+  "description": "Yaaaaaaargh!",
+  "main": "server.js",
+  "authors": [
+    "Noel Felix"
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/nfelix83/2016-01-MVP-PirateBooty",
+  "moduleType": [
+    "node"
+  ],
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "angular-route": "^1.5.0",
+    "angular": "^1.5.0",
+    "Materialize": "materialize#^0.97.5"
+  }
+}

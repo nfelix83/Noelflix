@@ -1,0 +1,49 @@
+#logo {
+  position: relative;
+  max-height: 100%;
+}
+
+.nav-wrapper {
+  background: linear-gradient(to right, #BE0000 8%, white 90%);
+}
+
+.right li a {
+  color: #303030;
+  font-weight: bold;
+}
+
+.card {
+  display: inline-block;
+  width: 20%;
+}
+
+.linkText, .revealedLinkText {
+  width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.titleText {
+  width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-right: 0px;
+}
+
+.card-title .material-icons {
+  margin-left: 0px;
+}
+
+.revealedTitle {
+  font-size: .85em;
+  height: 2em;
+}
+.revealedLinkText {
+  width: 85%;
+}
+
+.thumb {
+  font-size: 1.3em;
+}
