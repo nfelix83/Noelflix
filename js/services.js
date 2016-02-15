@@ -1,7 +1,7 @@
 angular.module('pirateBooty.services', [])
 
 .factory('Movies', function($http){
-  var baseURL = 'http://api.themoviedb.org/3/';
+  var baseURL = 'https://api.themoviedb.org/3/';
   var apiKey = '2047f691362eca75ead64c4a36d0a0ae';
 
   var getNew = function(moviesArray){
