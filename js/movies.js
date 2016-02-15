@@ -6,6 +6,7 @@ angular.module('pirateBooty.movies', [])
   }
 
   $scope.fresh = function(){
+    console.log(Movies.view());
     $('.active').removeClass('active');
     $('#fresh').addClass('active');
     $scope.movies = [];

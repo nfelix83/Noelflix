@@ -35,6 +35,7 @@ app.get('/', function(req, res){
 
 app.get('/search/:searchParam', function(req, res){
   console.log('RANGE: ' + req.headers.range);
+  console.log('PARAM: ' + req.params.searchParam);
   var queryParams = {
     q: req.params.searchParam,
     field: 'seeders'
@@ -47,7 +48,7 @@ app.get('/search/:searchParam', function(req, res){
           results.list[i].title.indexOf('mp4') !== -1 ||
           results.list[i].title.indexOf('webm') !== -1 ||
           results.list[i].title.indexOf('ogg') !== -1) &&
-          results.list[i].size < 1200000000) {
+          results.list[i].size < 1500000000) {
         filteredResults.push(results.list[i].hash);
       }
     }
