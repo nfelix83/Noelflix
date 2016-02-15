@@ -6,6 +6,7 @@ var torrentStream = require('torrent-stream');
 var express = require('express');
 var app = express();
 
+var port = process.env.PORT || 3000;
 var trackers = ['http://9.rarbg.com:2710/announce',
          'http://announce.torrentsmd.com:6969/announce',
          'http://bt.careland.com.cn:6969/announce',
@@ -93,4 +94,4 @@ app.get('/search/:searchParam', function(req, res){
   });
 });
 
-app.listen(3000);
+app.listen(port);
