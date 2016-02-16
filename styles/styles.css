@@ -1,6 +1,6 @@
 #logo {
-  position: relative;
   max-height: 100%;
+  float: left;
 }
 
 .nav-wrapper {
@@ -46,4 +46,44 @@
 
 .thumb {
   font-size: 1.3em;
+}
+
+#videoPage {
+  width: 100%;
+  background-color: black;
+}
+
+#playing {
+  width: 90%;
+  margin: 0px 5%;
+}
+
+.video-nav-button {
+  width: 7%;
+  background-color: #873E3E;
+}
+
+#previous {
+  margin-left: 33%;
+}
+
+#next {
+  margin-left: 20%;
+}
+
+.search-radio {
+  float: left;
+}
+
+.search-radio label{
+  padding-left: 25px !important;
+}
+
+#torrent-search {
+  margin-right: 15px;
+  margin-left: 11.5%;
+}
+
+#searchSubmit {
+  display: none;
 }

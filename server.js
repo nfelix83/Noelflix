@@ -2,9 +2,15 @@ var morgan = require('morgan');
 var Promise = require('bluebird');
 var kickass = Promise.promisify(require('kickass-torrent'));
 var torrentStream = require('torrent-stream');
+var io = require('socket.io')(server);
+var mongoose = require('mongoose');
+var EventEmitter = require('events');
 
-var express = require('express');
+var express = require('express'),
+    http = require('http');
 var app = express();
+var server = http.createServer(app);
+var io = require('socket.io').listen(server);
 
 var port = process.env.PORT || 3000;
 var trackers = ['http://9.rarbg.com:2710/announce',
@@ -29,70 +35,111 @@ var trackers = ['http://9.rarbg.com:2710/announce',
 
 app.use('/', express.static(__dirname + '/'));
 app.use(morgan('dev'));
+  
+var myEvents = new EventEmitter();
 
-app.get('/', function(req, res){
-});
+var filteredResults = [];
 
-app.get('/search/:searchParam', function(req, res){
-  console.log('RANGE: ' + req.headers.range);
-  console.log('PARAM: ' + req.params.searchParam);
-  var queryParams = {
-    q: req.params.searchParam,
-    field: 'seeders'
-  }
-  kickass(queryParams)
-  .then(function(results){
-    var filteredResults = [];
-    for(var i = 0; i < results.list.length; i++){
-      if((results.list[i].title.indexOf('264') !== -1 ||
-          results.list[i].title.indexOf('mp4') !== -1 ||
-          results.list[i].title.indexOf('webm') !== -1 ||
-          results.list[i].title.indexOf('ogg') !== -1) &&
-          results.list[i].size < 1500000000) {
-        filteredResults.push(results.list[i].hash);
-      }
+var builtFlag;
+
+var generateList = function(param){
+
+  var validResults = true;
+  builtFlag = false;
+
+  filteredResults = [];
+  
+  for(var i = 0; i < 5 && validResults; i++){
+    var queryParams = {
+      q: param,
+      field: 'seeders',
+      page: i + 1
     }
-    var engine = torrentStream('magnet:?xt=urn:btih:' + filteredResults[0],
-                               {connections: 10000,
-                                uploads: 0,
-                                trackers: trackers});
-    engine.on('ready', function(){
-      var fileToStream = undefined;
-      var maxLength = 0;
-      engine.files.forEach(function(file){
-        if(file.length > maxLength){
-          maxLength = file.length;
-          fileToStream = file;
-        }
-      });
-      var type = 'mp4';
-      if(fileToStream.name.indexOf('.264') !== -1){ type = 'mp4'}
-      if(fileToStream.name.indexOf('.mp4') !== -1){ type = 'mp4'}
-      if(fileToStream.name.indexOf('.webm') !== -1){ type = 'webm'}
-      if(fileToStream.name.indexOf('.ogg') !== -1){ type = 'ogg'}
-      console.log(fileToStream.name, ' : ', type);
-      var total = fileToStream.length;
-
-      if(typeof req.headers.range != 'undefined') {
-          var range = req.headers.range;
-          var parts = range.replace(/bytes=/, "").split("-");
-          var partialstart = parts[0];
-          var partialend = parts[1];
-          var start = parseInt(partialstart, 10);
-          var end = partialend ? parseInt(partialend, 10) : total - 1;
-      } else {
-          var start = 0;
-          var end = total;
+    kickass(queryParams)
+    .then(function(results){
+      if(results.list.length === 0){
+        validResults = false;
       }
-      var chunksize = (end - start) + 1;
-      var stream = fileToStream.createReadStream({start: start, end: end});
-      res.writeHead(206, { 'Content-Range': 'bytes ' + start + '-' + end + '/' + total,
-                           'Accept-Ranges': 'bytes',
-                           'Content-Length': chunksize,
-                           'Content-Type': 'video/' + type });
-      stream.pipe(res);
+      for(var i = 0; i < results.list.length; i++){
+        if((results.list[i].title.indexOf('264') !== -1 ||
+            results.list[i].title.indexOf('265') !== -1 ||
+            results.list[i].title.indexOf('mp4') !== -1 ||
+            results.list[i].title.indexOf('webm') !== -1 ||
+            results.list[i].title.indexOf('ogg') !== -1) &&
+            results.list[i].size < 1500000000) {
+          if(results.list[i].seeds > 4){
+            filteredResults.push(results.list[i].hash);
+            if(filteredResults.length > 0 && builtFlag === false){
+              myEvents.emit('built');
+              builtFlag = true;
+            }
+          } else {
+            validResults = false;
+          break;
+          }
+        }
+      }
     });
+  }
+};
+
+app.get('/watch/:position/:searchParam', function(req, res){
+  var engine = torrentStream('magnet:?xt=urn:btih:' + filteredResults[req.params.position],
+                             {connections: 10000,
+                              uploads: 0,
+                              trackers: trackers});
+  engine.on('ready', function(){
+    var fileToStream = undefined;
+    var maxLength = 0;
+    engine.files.forEach(function(file){
+      if(file.length > maxLength){
+        maxLength = file.length;
+        fileToStream = file;
+      }
+    });
+    var type = 'mp4';
+    if(fileToStream.name.indexOf('.264') !== -1){ type = 'mp4'}
+    if(fileToStream.name.indexOf('.mp4') !== -1){ type = 'mp4'}
+    if(fileToStream.name.indexOf('.webm') !== -1){ type = 'webm'}
+    if(fileToStream.name.indexOf('.ogg') !== -1){ type = 'ogg'}
+    console.log(fileToStream.name, ' : ', type);
+    var total = fileToStream.length;
+
+    if(typeof req.headers.range != 'undefined') {
+        var range = req.headers.range;
+        var parts = range.replace(/bytes=/, "").split("-");
+        var partialstart = parts[0];
+        var partialend = parts[1];
+        var start = parseInt(partialstart, 10);
+        var end = partialend ? parseInt(partialend, 10) : total - 1;
+    } else {
+        var start = 0;
+        var end = total;
+    }
+    var chunksize = (end - start) + 1;
+    var stream = fileToStream.createReadStream({start: start, end: end});
+    res.writeHead(206, { 'Content-Range': 'bytes ' + start + '-' + end + '/' + total,
+                         'Accept-Ranges': 'bytes',
+                         'Content-Length': chunksize,
+                         'Content-Type': 'video/' + type });
+    stream.pipe(res);
   });
 });
 
-app.listen(port);
+io.on('connection', function(socket){
+  console.log('Socket to me.');
+
+  myEvents.on('built', function(){
+    socket.emit('built');
+  });
+
+  socket.on('generateList', function(param){
+    generateList(param);
+  });
+
+  socket.on('getVideoArrayLength', function(){
+    socket.emit('videoArrayLength', filteredResults.length);
+  });
+})
+
+server.listen(port);

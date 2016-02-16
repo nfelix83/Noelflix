@@ -1,0 +1,26 @@
+<div class="navbar">
+  <nav>
+    <div class="row nav-wrapper">
+      <a href='#'><img id='logo' src='./logo.png'></a>
+      <ul class="right hide-on-small-and-down">
+        <li id='fresh' ng-click='fresh()'><a href="/#">Fresh</a>
+        </li>
+        <li id='popular' ng-click='popular()'><a href="/#">Popular</a>
+        </li>
+        <li id='top' ng-click='top()' class="active"><a href="/#">Top</a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+</div>
+<div id='videoPage'>
+  <video id='playing' class="responsive-video" controls autoplay>
+    <source ng-src="{{getSource()}}" type="video/mp4">
+  </video>
+  <a ng-click='prev()' id='previous' class="video-nav-button waves-effect waves-light btn red darken-4">
+    <i class="material-icons left">arrow_back</i>
+  </a>
+  <a ng-click='next()' id='next' class="video-nav-button waves-effect waves-light btn red darken-4">
+    <i class="material-icons left">arrow_forward</i>
+  </a>
+</div>
