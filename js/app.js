@@ -19,5 +19,10 @@ angular.module('pirateBooty', ['ui.router', 'pirateBooty.services', 'pirateBooty
       url:'/watch/:title',
       templateUrl: '/templates/_watch.html',
       controller: 'WatchController'
+    })
+    .state('session', {
+      url:'/session/:name',
+      templateUrl: '/templates/_session.html',
+      controller: 'SessionController'
     });
 });

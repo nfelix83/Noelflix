@@ -14,20 +14,8 @@
   </nav>
 </div>
 <div id='videoPage'>
-  <canvas id='myCanvas'></canvas>
-  <video id='playing' class="responsive-video" controls autoplay>
-    <source ng-src="{{getSource()}}" type="video/mp4">
-  </video>
-  <a ng-click='prev()' id='previous' class="video-nav-button waves-effect waves-light btn red darken-4">
-    <i class="material-icons left">arrow_back</i>
-  </a>
-  <a ng-click='create()' id='create' class="video-nav-button waves-effect waves-light btn red darken-4">Create Session
-  </a>
-  <a ng-click='next()' id='next' class="video-nav-button waves-effect waves-light btn red darken-4">
-    <i class="material-icons left">arrow_forward</i>
-  </a>
+  <canvas id='c'></canvas>
 </div>
-
 <div id="chatModal" class="modal">
   <div class="modal-content">
     <ul id="messages"></ul>

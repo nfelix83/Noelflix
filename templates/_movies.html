@@ -20,6 +20,8 @@
       </div>
       <a ng-click='search()' ng-show='searchParam.length > 0' class="cssFade waves-effect waves-light btn grey darken-2">Search</a>
       <ul class="right hide-on-small-and-down">
+        <li id='join' ng-click='displaySessions()'><a href="/#">Join</a>
+        </li>
         <li id='fresh' ng-click='fresh()'><a href="/#">Fresh</a>
         </li>
         <li id='popular' ng-click='popular()'><a href="/#">Popular</a>
@@ -49,5 +51,10 @@
     <i ng-repeat='thumb in thumbsUp(movie.vote_average)' class='thumb material-icons'>thumb_up</i>
     <i ng-repeat='thumb in thumbsDown(movie.vote_average)' class='thumb material-icons'>thumb_down</i>
     <p class='description'>{{movie.overview}}</p>
+  </div>
+</div>
+
+<div id="modal1" class="modal">
+  <div class="modal-content">
   </div>
 </div>

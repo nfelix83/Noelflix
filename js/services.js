@@ -11,7 +11,7 @@ angular.module('pirateBooty.services', [])
       method: 'GET',
       url: baseURL + 'discover/movie',
       params: {api_key: apiKey,
-               'vote_count.gte': '50',
+               'vote_count.gte': '150',
                'release_date.lte': '2016-02-14',
                sort_by: 'release_date.desc',
                page: 1}
@@ -24,7 +24,7 @@ angular.module('pirateBooty.services', [])
         method: 'GET',
         url: baseURL + 'discover/movie',
         params: {api_key: apiKey,
-                 'vote_count.gte': '50',
+                 'vote_count.gte': '150',
                 'release_date.lte': '2016-02-14',
                  sort_by: 'release_date.desc',
                  page: 2}
@@ -37,7 +37,7 @@ angular.module('pirateBooty.services', [])
           method: 'GET',
           url: baseURL + 'discover/movie',
           params: {api_key: apiKey,
-                  'vote_count.gte': '50',
+                  'vote_count.gte': '150',
                   'release_date.lte': '2016-02-14',
                   sort_by: 'release_date.desc',
                    page: 3}
@@ -112,7 +112,7 @@ angular.module('pirateBooty.services', [])
       method: 'GET',
       url: baseURL + 'discover/movie',
       params: {api_key: apiKey,
-               'vote_count.gte': '100',
+               'vote_count.gte': '150',
                'release_date.lte': '2016-02-14',
                sort_by: 'vote_average.desc',
                page: 1}
@@ -125,7 +125,7 @@ angular.module('pirateBooty.services', [])
         method: 'GET',
         url: baseURL + 'discover/movie',
         params: {api_key: apiKey,
-                 'vote_count.gte': '100',
+                 'vote_count.gte': '150',
                 'release_date.lte': '2016-02-14',
                  sort_by: 'vote_average.desc',
                  page: 2}
@@ -138,7 +138,7 @@ angular.module('pirateBooty.services', [])
           method: 'GET',
           url: baseURL + 'discover/movie',
           params: {api_key: apiKey,
-                  'vote_count.gte': '100',
+                  'vote_count.gte': '150',
                   'release_date.lte': '2016-02-14',
                   sort_by: 'vote_average.desc',
                    page: 3}

@@ -59,16 +59,19 @@
 }
 
 .video-nav-button {
-  width: 7%;
+  width: 6%;
   background-color: #873E3E;
 }
 
 #previous {
-  margin-left: 33%;
+  margin-left: 36%;
 }
 
 #next {
-  margin-left: 20%;
+}
+
+#create {
+  width: 14%;
 }
 
 .search-radio {
@@ -86,4 +89,20 @@
 
 #searchSubmit {
   display: none;
+}
+
+#myCanvas {
+    display: none;
+}
+
+#c {
+  width: 40%;
+  margin: 10% 30% 0px 30%;
+}
+
+#chatModal{
+  position: absolute !important;
+  top: 15% !important;
+  left: 0% !important;
+  width: 15%;
 }

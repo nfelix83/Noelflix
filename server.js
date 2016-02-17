@@ -2,15 +2,13 @@ var morgan = require('morgan');
 var Promise = require('bluebird');
 var kickass = Promise.promisify(require('kickass-torrent'));
 var torrentStream = require('torrent-stream');
-var io = require('socket.io')(server);
 var mongoose = require('mongoose');
 var EventEmitter = require('events');
 
-var express = require('express'),
-    http = require('http');
+var express = require('express');
 var app = express();
-var server = http.createServer(app);
-var io = require('socket.io').listen(server);
+var http = require('http').Server(app);
+var io = require('socket.io')(http);
 
 var port = process.env.PORT || 3000;
 var trackers = ['http://9.rarbg.com:2710/announce',
@@ -42,6 +40,9 @@ var filteredResults = [];
 
 var builtFlag;
 
+var globalStream;
+var globalHeaders;
+
 var generateList = function(param){
 
   var validResults = true;
@@ -49,7 +50,7 @@ var generateList = function(param){
 
   filteredResults = [];
   
-  for(var i = 0; i < 5 && validResults; i++){
+  for(var i = 0; i < 1 && validResults; i++){
     var queryParams = {
       q: param,
       field: 'seeders',
@@ -66,7 +67,7 @@ var generateList = function(param){
             results.list[i].title.indexOf('mp4') !== -1 ||
             results.list[i].title.indexOf('webm') !== -1 ||
             results.list[i].title.indexOf('ogg') !== -1) &&
-            results.list[i].size < 1500000000) {
+            results.list[i].size < 1300000000) {
           if(results.list[i].seeds > 4){
             filteredResults.push(results.list[i].hash);
             if(filteredResults.length > 0 && builtFlag === false){
@@ -118,13 +119,26 @@ app.get('/watch/:position/:searchParam', function(req, res){
     }
     var chunksize = (end - start) + 1;
     var stream = fileToStream.createReadStream({start: start, end: end});
-    res.writeHead(206, { 'Content-Range': 'bytes ' + start + '-' + end + '/' + total,
+    globalHeaders = { 'Content-Range': 'bytes ' + start + '-' + end + '/' + total,
                          'Accept-Ranges': 'bytes',
                          'Content-Length': chunksize,
-                         'Content-Type': 'video/' + type });
+                         'Content-Type': 'video/' + type };
+    res.writeHead(206, globalHeaders);
+    globalStream = stream;
+    myEvents.emit('streamReady');
     stream.pipe(res);
+    myEvents.on('cleanUpStream', function(){
+      engine.remove(function(){
+        engine.destroy(function(){
+          console.log('Engine destroyed');
+          //OPTIONAL CLEANUP
+        });
+      });
+    });
   });
 });
+
+// var currentFrame;
 
 io.on('connection', function(socket){
   console.log('Socket to me.');
@@ -140,6 +154,63 @@ io.on('connection', function(socket){
   socket.on('getVideoArrayLength', function(){
     socket.emit('videoArrayLength', filteredResults.length);
   });
-})
 
-server.listen(port);
+  socket.on('createSession', function(session){
+    var session = new Session(session);
+    session.save();
+  });
+
+  socket.on('getSessions', function(){
+    Session.find({}, function(err, results){
+      socket.emit('sessions', results);
+    });
+  })
+
+  socket.on('destroySession', function(session){
+    Session.findOne(session, function(err, result){
+      result.remove();
+    });
+  });
+
+  socket.on('cleanUpStream', function(){
+    myEvents.emit('cleanUpStream');
+  });
+
+  socket.on('sessionInit', function(){
+    io.emit('sessionCreated');
+  });
+
+  socket.on('draw', function(v){
+    io.emit('frame', v);
+  });
+
+  // socket.on('getFrame', function(){
+  //   socket.emit('frame', currentFrame);
+  // });
+
+  socket.on('chat message', function(msg){
+    io.emit('chat message', msg);
+  });
+
+  // myEvents.on('streamReady', function(){
+  //   var stream = ss.createStream();
+  //   ss(socket).emit('streaming', stream);
+  //   globalStream.pipe(stream);
+  // });
+});
+
+mongoose.connect('mongodb://127.0.0.1:27017/pirateBooty');
+var db = mongoose.connection;
+db.on('error', console.error.bind(console, 'connection error:'));
+db.once('open', function(callback){
+  console.log("Connected to DB");
+});
+
+var sessionSchema = mongoose.Schema({
+  name: { type: String, required: true},
+  password: String
+});
+
+var Session = mongoose.model('Session', sessionSchema);
+
+http.listen(port);
