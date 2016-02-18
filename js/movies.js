@@ -181,8 +181,8 @@ angular.module('pirateBooty.movies', [])
   $scope.draw = function(){
     var v = document.getElementById('playing');
     var canvas = document.getElementById('myCanvas');
-    canvas.width = 400;
-    canvas.height = 300;
+    canvas.width = 640;
+    canvas.height = 360;
     var context = canvas.getContext('2d');
     $interval(function(){
       context.drawImage(v,0,0,canvas.width,canvas.height);
@@ -213,8 +213,8 @@ angular.module('pirateBooty.movies', [])
 .controller('SessionController', function($interval){
     socket.emit('sessionInit');
     var canvas = document.getElementById('c');
-    canvas.width = 400;
-    canvas.height = 300;
+    canvas.width = 640;
+    canvas.height = 360;
     var context = canvas.getContext('2d');
     socket.on('frame', function(frame){
       var image = new Image

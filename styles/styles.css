@@ -55,7 +55,7 @@
 
 #playing {
   width: 90%;
-  margin: 0px 5%;
+  margin: 2% 5% 0px 5%;
 }
 
 .video-nav-button {
@@ -96,8 +96,8 @@
 }
 
 #c {
-  width: 40%;
-  margin: 10% 30% 0px 30%;
+  width: 60%;
+  margin: 5% 20% 0px 20%;
 }
 
 #chatModal{
