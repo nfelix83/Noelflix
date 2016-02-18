@@ -125,6 +125,7 @@ angular.module('pirateBooty.movies', [])
       if($scope.getPosition() < length - 1){
         Watch.increment();
         var video = document.getElementById('playing');
+        socket.emit('cleanUpStream');
         video.src = '' + $scope.getSource();
         video.play();
       } else {
@@ -136,6 +137,7 @@ angular.module('pirateBooty.movies', [])
     if($scope.getPosition() > 0){
       Watch.decrement();
       var video = document.getElementById('playing');
+      socket.emit('cleanUpStream');
       video.src = '' + $scope.getSource();
       video.play();
     } else {
