@@ -189,7 +189,7 @@ angular.module('pirateBooty.movies', [])
     $interval(function(){
       context.drawImage(v,0,0,canvas.width,canvas.height);
       socket.emit('draw', canvas.toDataURL('image/jpeg',40));
-    }, 20);
+    }, 30);
   }
 
   $('#chatForm').submit(function(){
@@ -203,6 +203,23 @@ angular.module('pirateBooty.movies', [])
   $('#chatModal').draggable();
 
   $('body').css('background-color', 'black');
+
+  var peer = new Peer({key: 'lwjd5qra8257b9'});
+
+  socket.on('peer-connect', function (peerID) {
+    var conn = peer.connect(peerID);
+    conn.on('open', function() {
+      navigator.getUserMedia_ = (   navigator.getUserMedia
+                           || navigator.webkitGetUserMedia
+                           || navigator.mozGetUserMedia
+                           || navigator.msGetUserMedia);
+        navigator.getUserMedia_({audio: true}, function(stream) {
+          var call = peer.call(peerID, stream);
+        }, function(err) {
+          console.log('Failed to get local stream' ,err);
+        });
+    });
+  });
 })
 
 .controller('LoadController', function($stateParams, $window){
@@ -242,4 +259,53 @@ angular.module('pirateBooty.movies', [])
     angular.element('#chatModal').openModal();
 
     $('body').css('background-color', 'black');
+
+    //
+    // var source = audCtx.createBufferSource();
+    // var player = audCtx.createScriptProcessor(2048, 1, 1);
+    //
+    // player.onaudioprocess = function (audioProcessingEvent) {
+    //   var inputBuffer = audioProcessingEvent.inputBuffer;
+    //   var outputBuffer = audioProcessingEvent.outputBuffer;
+    //
+    //   for (var channel = 0; channel < outputBuffer.numberOfChannels; channel++) {
+    //     var inputData = inputBuffer.getChannelData(channel);
+    //     var outputData = outputBuffer.getChannelData(channel);
+    //
+    //     // Loop through the 2048 samples
+    //     for (var sample = 0; sample < inputBuffer.length; sample++) {
+    //       // make output equal to the same as the input
+    //       outputData[sample] = inputData[sample];
+    //
+    //       // add noise to each output sample
+    //       // outputData[sample] += ((Math.random() * 2) - 1) * 0.2;
+    //     }
+    //   }
+    // };
+
+    var peer = new Peer({key: 'lwjd5qra8257b9'});
+
+    peer.on('open', function (id) {
+      socket.emit('peer-connect', id);
+    });
+
+    peer.on('connection', function(conn) {
+      conn.on('open', function() {
+        navigator.getUserMedia_ = (   navigator.getUserMedia
+                             || navigator.webkitGetUserMedia
+                             || navigator.mozGetUserMedia
+                             || navigator.msGetUserMedia);
+        peer.on('call', function(call) {
+          call.answer();
+          call.on('stream', function(remoteStream) {
+            var audio = document.querySelector('audio');
+            audio.src = window.URL.createObjectURL(remoteStream);
+            audio.onloadedmetadata = function(e){
+                console.log('Now playing!');
+                audio.play();
+            }
+          });
+        });
+      });
+    });
 });

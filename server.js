@@ -33,7 +33,7 @@ var trackers = ['http://9.rarbg.com:2710/announce',
 
 app.use('/', express.static(__dirname + '/'));
 app.use(morgan('dev'));
-  
+
 var myEvents = new EventEmitter();
 
 var filteredResults = [];
@@ -49,7 +49,7 @@ var generateList = function(param){
   builtFlag = false;
 
   filteredResults = [];
-  
+
   for(var i = 0; i < 1 && validResults; i++){
     var queryParams = {
       q: param,
@@ -190,6 +190,10 @@ io.on('connection', function(socket){
 
   socket.on('chat message', function(msg){
     io.emit('chat message', msg);
+  });
+
+  socket.on('peer-connect', function(id) {
+    io.emit('peer-connect', id);
   });
 
   // myEvents.on('streamReady', function(){
