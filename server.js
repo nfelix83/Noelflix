@@ -1,14 +1,15 @@
 var morgan = require('morgan');
 var Promise = require('bluebird');
-var kickass = Promise.promisify(require('kickass-torrent'));
 var torrentStream = require('torrent-stream');
 var mongoose = require('mongoose');
 var EventEmitter = require('events');
 
 var express = require('express');
 var app = express();
-var http = require('http').Server(app);
-var io = require('socket.io')(http);
+var http = require('http')
+var server = http.Server(app);
+var io = require('socket.io')(server);
+var request = require('request');
 
 var port = process.env.PORT || 3000;
 var trackers = ['http://9.rarbg.com:2710/announce',
@@ -45,43 +46,34 @@ var globalHeaders;
 
 var generateList = function(param){
 
-  var validResults = true;
-  builtFlag = false;
-
   filteredResults = [];
 
-  for(var i = 0; i < 1 && validResults; i++){
-    var queryParams = {
-      q: param,
-      field: 'seeders',
-      page: i + 1
+  request('https://kat.cr/json.php?q=' + param, function (err, res, body){
+    var results = JSON.parse(body).list;
+    if(results.length === 0){
+      //EMIT EVENT TO REDIRECT
     }
-    kickass(queryParams)
-    .then(function(results){
-      if(results.list.length === 0){
-        validResults = false;
-      }
-      for(var i = 0; i < results.list.length; i++){
-        if((results.list[i].title.indexOf('264') !== -1 ||
-            results.list[i].title.indexOf('265') !== -1 ||
-            results.list[i].title.indexOf('mp4') !== -1 ||
-            results.list[i].title.indexOf('webm') !== -1 ||
-            results.list[i].title.indexOf('ogg') !== -1) &&
-            results.list[i].size < 1300000000) {
-          if(results.list[i].seeds > 4){
-            filteredResults.push(results.list[i].hash);
-            if(filteredResults.length > 0 && builtFlag === false){
-              myEvents.emit('built');
-              builtFlag = true;
-            }
-          } else {
-            validResults = false;
-          break;
+    var consecutivePoorResults = 0;
+    for(var i = 0; i < results.length; i++){
+      if((results[i].title.indexOf('264') !== -1 ||
+        results[i].title.indexOf('265') !== -1 ||
+        results[i].title.indexOf('mp4') !== -1 ||
+        results[i].title.indexOf('webm') !== -1 ||
+        results[i].title.indexOf('ogg') !== -1) &&
+        results[i].size < 3000000000) {
+        if (results[i].seeds > 4) {
+          consecutivePoorResults = 0;
+          filteredResults.push(results[i].hash);
+        } else {
+          consecutivePoorResults++;
+          if (consecutivePoorResults === 5) {
+            break;
           }
         }
       }
-    });
-  }
+    }
+    myEvents.emit('built');
+  });
 };
 
 app.get('/watch/:position/:searchParam', function(req, res){
@@ -131,7 +123,7 @@ app.get('/watch/:position/:searchParam', function(req, res){
       engine.remove(function(){
         engine.destroy(function(){
           console.log('Engine destroyed');
-          //OPTIONAL CLEANUP
+          //OPTIONAL CLEANUP!!!!!!!!!!!!!!!!!!!
         });
       });
     });
@@ -217,4 +209,4 @@ var sessionSchema = mongoose.Schema({
 
 var Session = mongoose.model('Session', sessionSchema);
 
-http.listen(port);
+server.listen(port);
