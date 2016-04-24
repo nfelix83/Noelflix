@@ -64,7 +64,6 @@ angular.module('pirateBooty.movies', [])
     if($scope.searchType === 'torrent'){
       $window.location.href = '#/load/' + $scope.searchParam;
     } else {
-      $scope.movies = [];
       Movies.search($scope.searchParam, $scope.movies);
     }
   }
