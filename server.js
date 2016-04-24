@@ -50,9 +50,6 @@ var generateList = function(param){
 
   request('https://kat.cr/json.php?q=' + param, function (err, res, body){
     var results = JSON.parse(body).list;
-    if(results.length === 0){
-      //EMIT EVENT TO REDIRECT
-    }
     var consecutivePoorResults = 0;
     for(var i = 0; i < results.length; i++){
       if((results[i].title.indexOf('264') !== -1 ||
@@ -61,7 +58,7 @@ var generateList = function(param){
         results[i].title.indexOf('webm') !== -1 ||
         results[i].title.indexOf('ogg') !== -1) &&
         results[i].size < 3000000000) {
-        if (results[i].seeds > 4) {
+        if (results[i].seeds > 2) {
           consecutivePoorResults = 0;
           filteredResults.push(results[i].hash);
         } else {
@@ -72,7 +69,11 @@ var generateList = function(param){
         }
       }
     }
-    myEvents.emit('built');
+    if (filteredResults.length) {
+      myEvents.emit('built');
+    } else {
+      myEvents.emit('redirectHome');
+    }
   });
 };
 
@@ -137,6 +138,10 @@ io.on('connection', function(socket){
 
   myEvents.on('built', function(){
     socket.emit('built');
+  });
+
+  myEvents.on('redirectHome', function(){
+    socket.emit('redirectHome');
   });
 
   socket.on('generateList', function(param){

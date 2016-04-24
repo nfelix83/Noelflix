@@ -227,6 +227,10 @@ angular.module('pirateBooty.movies', [])
   socket.on('built', function(){
     $window.location.href = '#/watch/' + $stateParams.title;
   });
+  socket.on('redirectHome', function(){
+    Materialize.toast('No valid results', 4000)
+    $window.location.href = '#/';
+  });
 })
 
 .controller('SessionController', function($interval){
