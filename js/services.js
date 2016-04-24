@@ -159,25 +159,23 @@ angular.module('pirateBooty.services', [])
     });
   };
 
-  var search = function(title, moviesArray){
+  var search = function(title, callback){
+    var moviesArray = [];
     $http({
       method: 'GET',
       url: baseURL + 'search/movie',
       params: {api_key: apiKey,
                query: title}
     }).then(function success(data){
-      if(data.data.results.length) {
-        for(var i = 0; i < data.data.results.length; i++){
-          data.data.results[i].watchTitle = data.data.results[i].title.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g,"");
-          moviesArray.push(data.data.results[i]);
-          moviesArray.sort(function(a, b){
-            return b.vote_count - a.vote_count;
-          });
-        };
-        console.log(moviesArray);
-      } else {
-        Materialize.toast("No valid results found", 4000);
-      }
+      for(var i = 0; i < data.data.results.length; i++){
+        data.data.results[i].watchTitle = data.data.results[i].title.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g,"");
+        moviesArray.push(data.data.results[i]);
+        moviesArray.sort(function(a, b){
+          return b.vote_count - a.vote_count;
+        });
+      };
+      console.log(moviesArray);
+      callback(moviesArray);
     }, function error(err){
       console.error(err);
     });
