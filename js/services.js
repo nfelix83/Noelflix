@@ -1,6 +1,6 @@
 angular.module('pirateBooty.services', [])
 
-.factory('Movies', function($http){
+.factory('Movies', function($http, $window){
   var views = 0;
   var view = function(){views++; console.log(views);}
   var baseURL = 'https://api.themoviedb.org/3/';
@@ -166,14 +166,18 @@ angular.module('pirateBooty.services', [])
       params: {api_key: apiKey,
                query: title}
     }).then(function success(data){
-      for(var i = 0; i < data.data.results.length; i++){
-        data.data.results[i].watchTitle = data.data.results[i].title.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g,"");
-        moviesArray.push(data.data.results[i]);
-        moviesArray.sort(function(a, b){
-          return b.vote_count - a.vote_count;
-        });
-      };
-      console.log(moviesArray)
+      if(data.data.results.length) {
+        for(var i = 0; i < data.data.results.length; i++){
+          data.data.results[i].watchTitle = data.data.results[i].title.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g,"");
+          moviesArray.push(data.data.results[i]);
+          moviesArray.sort(function(a, b){
+            return b.vote_count - a.vote_count;
+          });
+        };
+        console.log(moviesArray);
+      } else {
+        Materialize.toast("No valid results found", 4000);
+      }
     }, function error(err){
       console.error(err);
     });
