@@ -64,7 +64,13 @@ angular.module('pirateBooty.movies', [])
     if($scope.searchType === 'torrent'){
       $window.location.href = '#/load/' + $scope.searchParam;
     } else {
-      Movies.search($scope.searchParam, $scope.movies);
+      Movies.search($scope.searchParam, function (results) {
+        if (results.length) {
+          $scope.movies = JSON.parse(JSON.stringify(results));
+        } else {
+          Materialize.toast("No results found", 4000);
+        }
+      });
     }
   }
 
